@@ -1,5 +1,6 @@
 package com.arbaini.kipaspintar;
 
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -9,14 +10,29 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.arbaini.kipaspintar.pojo.GraphTemp;
 import com.arbaini.kipaspintar.pojo.StatusPower;
 import com.arbaini.kipaspintar.pojo.TempPojo;
+
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.builder.AnimateGifMode;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,10 +42,27 @@ public class MainActivity extends AppCompatActivity {
     APIInterfaces apiInterface;
     private int idChanel;
 
+    private ArrayList<GraphTemp> data;
+
+
+    ArrayList yAxis;
+    ArrayList yValues;
+    ArrayList xAxis1;
+    BarEntry values ;
+    BarChart chart;
+    LineChart lineChart;
+
+
+    BarData bardata;
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         idChanel = 369167;
 
@@ -38,9 +71,11 @@ public class MainActivity extends AppCompatActivity {
         tvState = (TextView) findViewById(R.id.textView);
         tvTemp = (TextView) findViewById(R.id.tv_temp);
         imgLamp = (ImageView) findViewById(R.id.img_lamp);
+        lineChart = (LineChart) findViewById(R.id.chart);
 
         apiInterface = APIClient.getClient().create(APIInterfaces.class);
         updateTemp();
+        loadJSON();
 
 
     }
@@ -168,5 +203,80 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+
+    private void loadJSON() {
+
+
+        final ArrayList<Entry> entries = new ArrayList<>() ;
+
+        Call<JSONResponse> call = apiInterface.getJSON();
+        call.enqueue(new Callback<JSONResponse>() {
+            @Override
+            public void onResponse(Call<JSONResponse> call, Response<JSONResponse> response) {
+
+                JSONResponse jsonResponse = response.body();
+                data = new ArrayList<>(Arrays.asList(jsonResponse.getGraphTemp()));
+
+                for(int i=0; i < data.size(); i++){
+
+                    String snilai = data.get(i).getField1();
+
+                    Log.d("DATA", snilai);
+
+                    int nilai = Integer.valueOf(snilai);
+
+                    float fnilai = (float) nilai;
+
+
+
+                    entries.add(new Entry(i, fnilai));
+
+
+                }
+
+                LineDataSet lineDataSet = new LineDataSet(entries,"Celcius");
+
+
+                LineData lineData = new LineData(lineDataSet);
+
+
+                lineChart.getDescription().setEnabled(false);
+
+                lineChart.setDrawGridBackground(false);
+                lineChart.setDrawBorders(false);
+
+                //lineChart.setAutoScaleMinMaxEnabled(true);
+
+                YAxis leftAxis = lineChart.getAxisLeft();
+                leftAxis.setEnabled(false);
+                YAxis rightAxis = lineChart.getAxisRight();
+                rightAxis.setEnabled(false);
+
+                XAxis xAxis = lineChart.getXAxis();
+                xAxis.setEnabled(false);
+
+               // lineChart.getAxisLeft().setDrawAxisLine(false);
+                //lineChart.getAxisRight().setDrawGridLines(false);
+                //lineChart.getXAxis().setDrawGridLines(false);
+
+                //lineChart.getAxisLeft().setDrawLabels(false);
+                //lineChart.getAxisRight().setDrawLabels(false);
+                //lineChart.getXAxis().setDrawLabels(false);
+
+                //lineChart.getLegend().setEnabled(false);
+                lineChart.setData(lineData);
+                lineChart.invalidate();
+
+
+            }
+
+            @Override
+            public void onFailure(Call<JSONResponse> call, Throwable t) {
+                Log.d("Error",t.getMessage());
+            }
+        });
+    }
+
 
 }

@@ -7,15 +7,13 @@ import com.arbaini.kipaspintar.pojo.StatusPower;
 import com.arbaini.kipaspintar.pojo.TempPojo;
 
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.http.Body;
+
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
-import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
+
 
 
 public interface APIInterfaces {
@@ -27,5 +25,8 @@ public interface APIInterfaces {
 
     @GET("/channels/{id}/field/1/last.json")
     Call<TempPojo> getTemp(@Path("id") int groupId);
+
+    @GET("/channels/369167/feeds.json?results=5")
+    Call<JSONResponse> getJSON();
 
 }
