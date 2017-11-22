@@ -4,6 +4,7 @@ package com.arbaini.kipaspintar;
  * Created by xplore on 11/21/17.
  */
 import com.arbaini.kipaspintar.pojo.StatusPower;
+import com.arbaini.kipaspintar.pojo.TempPojo;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -13,6 +14,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 
@@ -22,5 +24,8 @@ public interface APIInterfaces {
     @PUT("/talkbacks/20406/commands/9643913.json")
     Call<StatusPower> setPower(@Field("api_key") String apikey,
                               @Field("command_string") String perintahState);
+
+    @GET("/channels/{id}/field/1/last.json")
+    Call<TempPojo> getTemp(@Path("id") int groupId);
 
 }
