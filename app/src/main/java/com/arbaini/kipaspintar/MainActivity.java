@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
 
                     String snilai = data.get(i).getField1();
 
-                    Log.d("DATA", snilai);
+//                    Log.d("DATA", snilai);
 
                     int nilai = Integer.valueOf(snilai);
 
