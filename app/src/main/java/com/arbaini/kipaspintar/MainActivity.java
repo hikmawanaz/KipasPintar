@@ -1,6 +1,7 @@
 package com.arbaini.kipaspintar;
 
 
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,7 +37,6 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Button mButtonOn,mButtonOff;
     private TextView tvState,tvTemp;
     private ImageView imgLamp;
     APIInterfaces apiInterface;
@@ -44,16 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ArrayList<GraphTemp> data;
 
-
-    ArrayList yAxis;
-    ArrayList yValues;
-    ArrayList xAxis1;
-    BarEntry values ;
-    BarChart chart;
     LineChart lineChart;
-
-
-    BarData bardata;
 
 
 
@@ -65,21 +56,39 @@ public class MainActivity extends AppCompatActivity {
 
 
         idChanel = 369167;
-
-        mButtonOn = (Button) findViewById(R.id.btn_on);
-        mButtonOff = (Button) findViewById(R.id.btn_off);
         tvState = (TextView) findViewById(R.id.textView);
         tvTemp = (TextView) findViewById(R.id.tv_temp);
         imgLamp = (ImageView) findViewById(R.id.img_lamp);
         lineChart = (LineChart) findViewById(R.id.chart);
 
         apiInterface = APIClient.getClient().create(APIInterfaces.class);
+
+
+
         updateTemp();
         loadJSON();
 
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        final Handler handler =new Handler();
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                Log.d("RUN","every");
+                updateTemp();
+                loadJSON();
+                handler.postDelayed(this,1000);
+            }
+        },1000);
+
+    }
 
     public void lampOn(View v){
 
